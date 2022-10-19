@@ -1,0 +1,25 @@
+/add <name> [description]
+/list
+/borrow and /return, confirmations by the other party
+	/borrow by whoever is borrowing
+	/return by whoever is getting it back
+/ledger
+
+data strutures:
+	book db
+		id
+		name
+		description
+		owner
+		status
+			AVAILABLE
+			REQUESTED
+			BORROWED
+		borrower
+		borrow_duration
+		time_borrowed
+	ledger
+		transaction type
+		id
+
+
