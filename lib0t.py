@@ -2,11 +2,11 @@
 
 import interactions
 import shortuuid
+import pickle
+import os
 
 token = open('token.txt','r').readlines()[0].strip('\n')
 lib0t = interactions.Client(token=token)
-
-library = []
 
 class Book:
     def __init__(self,name,description,owner):
@@ -18,6 +18,10 @@ class Book:
         self.status="AVAILABLE"
                     #"REQUESTED"
                     #"BORROWED"
+    def __repr__(self):
+        return str(self.__dict__)
+
+library = []
 
 @lib0t.command(name="add",description="Add a book/object to the library",
         options = [
@@ -38,8 +42,9 @@ class Book:
 async def add_book(ctx,name:str,description:str):
     owner=ctx.user.username + "#" + ctx.user.discriminator
     b = Book(name,description,owner)
-    fOutput = "Added book **\""+b.name+"** ["+b.id+"]"
+    fOutput = "Added book **\""+b.name+"\"** ["+b.id+"]"
     library.append(b)
+    print(f"User {owner} added {b}");
     await ctx.send(fOutput)
 
 @lib0t.command(name="remove",description="Remove a book/object from the library",
@@ -59,13 +64,14 @@ async def remove_book(ctx,id:str):
         if book.id == id:
             if book.owner == user:
                 fOutput = "Deleting book " + id
+                print(f"User {owner} removed {book}");
                 del library[index]
             else:
                 fOutput = "Not the owner of " + id
     await ctx.send(fOutput)
 
 @lib0t.command(name="list",description="List all books and their status.")
-async def show_help(ctx):
+async def list(ctx):
     fOutput = ":books: Books :books:\n\n"
     for book in library:
         if book.status == "AVAILABLE":
@@ -92,6 +98,7 @@ async def borrow_book(ctx,id:str):
             fOutput = "Borrowing **\""+book.name+"\"**"
             library[index].borrower=user
             library[index].status="BORROWED"
+            print(f"User {owner} borrowed {book}");
     await ctx.send(fOutput)
 
 @lib0t.command(name="return",description="Return a book to the library",
@@ -112,6 +119,7 @@ async def return_book(ctx,name:str):
             fOutput = "Returning **\""+book.name+"\"**"
             library[index].borrower="NONE"
             library[index].status="AVAILABLE"
+            print(f"User {owner} returned {book}");
     await ctx.send(fOutput)
 
 lib0t.start()
@@ -119,3 +127,4 @@ lib0t.start()
 @lib0t.event
 async def on_ready():
     print("The bot is now online.")
+
